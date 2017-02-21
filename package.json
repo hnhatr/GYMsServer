@@ -1,0 +1,27 @@
+{
+    "name": "servergyms",
+    "version": "1.0.0",
+    "description": "use facebook api to mining data ...",
+    "main": "app.js",
+    "scripts": {
+        "start": "node app.js",
+        "deploy": "gcloud app deploy",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "coins",
+    "license": "ISC",
+    "dependencies": {
+        "@google/maps": "^0.3.1",
+        "async": "^2.1.4",
+        "body-parser": "^1.15.2",
+        "express": "^4.14.0",
+        "fb": "^1.1.1",
+        "jsongraph": "^1.0.71",
+        "mongoose": "^4.7.6",
+        "node-restful": "^0.2.5",
+        "passport": "^0.3.2",
+        "passport-facebook": "^2.1.1",
+        "request": "^2.79.0",
+        "request-promise": "^4.1.1"
+    }
+}
