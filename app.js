@@ -5,7 +5,7 @@ var bodyParser = require('body-parser');
 
 
 // call Routes
-var apiSearch = require ('./routes/search');
+var apisearch = require ('./routes/search');
 
 
 
@@ -14,19 +14,23 @@ var apiSearch = require ('./routes/search');
 
 // Express
 var app = express();
+
+/**
+ * bodyParser
+ */
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 // Routes
 app.use('/', require('./routes/api'));
-app.get('/api/searchplace', apiSearch.searchplace);
-app.get('/api/test', apiSearch.test);
+app.get('/api/search', apisearch.searchplace);
+app.get('/api/test', apisearch.test);
 
 
 // Start server
 // app.listen(3000);
 // console.log('Listening on port 3000...');
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
   console.log('Press Ctrl+C to quit.');

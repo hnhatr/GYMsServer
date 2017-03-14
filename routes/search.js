@@ -1,94 +1,122 @@
 'use strict';
 
-// Defence
+// Libs
 var express = require('express');
 var async = require('async');
 
-// Link file
+/**
+ * Use Facebook API
+ * @type {API}
+ */
 var fbapi = require('../commons/fbgraphapi');
+
+/**
+ * Use Google API
+ * @type {API}
+ */
 var ggapi = require('../commons/googleapi');
 
-// search place with api [FACEBOOK, GOOGLE]
+/**
+ * Search for location input
+ * @param  {Object} req : request
+ * @param  {Object} res : response
+ * @return {Object}
+ */
 function searchplace(req, res) {
 
-    // get params from request
-    var query = req.query;
+    // Request parameters
+    let {latitude, longitude, types, type, radius} = req.query;
 
-    // handle request parameters
-    if (!query.latitude || !query.longitude || (!query.types && !query.type) || (query.types && query.type)) {
+    // Check request parameters
+    if (!latitude || !longitude || (!types && !type) || (types && type)) {
 
         res.status(400);
-        if (!query.latitude || !query.longitude)
-            res.send('Require \"latitude\" or \"longitude\" parameter for search!');
-        else
-            res.send('\"type\" or \"types\" require for search!')
+        res.send("Request send error \n" +
+            "latitude :" + latitude + "\n longitude : " + longitude + "\n types : " + type + "\n types : " + types);
 
     }
 
-    var radius = (query.radius)
-        ? query.radius
-        : 2000;
-    // Check query type or types
-    if (query.type) {
+    if (!radius) {
 
-        // create optional for search
+        radius = 2000; // meters
+
+    }
+
+    // Send request
+    if (type) {
+
+        // Create optional for search
         const searchOption = {
-            latitude: query.latitude,
-            longitude: query.longitude,
+            latitude: latitude,
+            longitude: longitude,
             radius: radius,
-            q: query.type,
+            q: type,
             type: 'place'
         };
-
-        // call api search
-        async.parallel([
-            function(next) {
-                // google search
-                ggapi.googleSearch(searchOption, function(err, result) {
-                    next(err, result);
-                });
-
-            },
-            function(next) {
-                // facebook search
-                fbapi.graphSearch(searchOption, function(err, result) {
-                    next(err, result);
-                });
-
-            }
-        ], function(err, results) {
-            // optional callback, result is list all callback
-            if (err)
-                res.send(err);
-            else {
-
-                var arrs = [];
-                if (!results[0].length && results[1].length > 0) {
-
-                    res.send(results[1]);
-
-                } else if (results[0].length > 0 && !results[1].length) {
-
-                    res.send(results[0]);
-
-                } else {
-
-                    res.send(results[0].concat(results[1]));
-
-                }
-            }
-        });
+        searchWithPlace(searchOption, res);
 
     } else {
         searchMultiWithPlace(null, req, req);
     }
 
-} // end searchplace
+}
+
+/**
+ * [searchWithPlace description]
+ * @param  {[type]} latitude  [description]
+ * @param  {[type]} longitude [description]
+ * @param  {[type]} radius    [description]
+ * @param  {[type]} type      [description]
+ * @return {[type]}           [description]
+ */
+function searchWithPlace(options, res) {
+
+    // call api search
+    async.parallel([
+        function(next) {
+            // google search
+            ggapi.googleSearch(options, function(err, result) {
+                next(err, result);
+            });
+
+        },
+        // function(next) {
+        //     // facebook search
+        //     fbapi.graphSearch(options, function(err, result) {
+        //         next(err, result);
+        //     });
+        //
+        // }
+    ], function(err, results) {
+
+        // optional callback, result is list all callback
+        if (results.length > 0) {
+
+            res.status(200);
+            var arrs = results;
+            if (arrs.length === 1) {
+                res.send(arrs[0]);
+            } else if (arrs.length === 2){
+                res.send(arrs[0].concat(arrs[1]));
+            }
+
+        } else {
+
+            res.status(404);
+            res.send(err);
+
+        }
+    });
+
+}
 
 // Search  place with multi types
 function searchMultiWithPlace(searchOptionList, req, res) {}
 
-function test(request, response) {}
+function test(request, response) {
+    var fullUrl = request.protocol + '://' + request.get('host') + request.originalUrl;
+    response.send("api send test for : " + fullUrl);
+}
 
 module.exports = {
     searchplace,

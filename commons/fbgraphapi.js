@@ -24,7 +24,7 @@ function graphSearch(option, callback) {
         if (!res || res.error) {
 
             var err = new Error('Search with error ' + res.error);
-            callback(err, null);
+            callback(err, []);
 
         } else {
 
@@ -46,7 +46,7 @@ function graphSearch(option, callback) {
                     FB.api(info.id, fields, function(ress) {
                         if (!ress || ress.error) {
                             var err = new Error('Search info ' + info.id + 'with error' + res.error);
-                            callback(err, null);
+                            callback(err, []);
                         } else {
                             callback(null, ress);
                         }
@@ -60,7 +60,7 @@ function graphSearch(option, callback) {
                 if (!err)
                     callback(err, factory.placeObjectFactory(scope.fb, results));
                 else {
-                    callback(err, null);
+                    callback(err, []);
                 }
 
             });

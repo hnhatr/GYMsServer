@@ -23,7 +23,7 @@ function googleSearch(option, callback) {
         if (!res || err) {
 
             var error = new Error('Search with error ' + err);
-            callback(error, null);
+            callback(error, []);
 
         } else {
 
@@ -39,7 +39,7 @@ function googleSearch(option, callback) {
                     }, function(err, ress) {
                         if (!ress || err) {
                             var error = new Error('Search info ' + info.placeid + 'with error' + res.error);
-                            callback(error, null);
+                            callback(error, []);
                         } else {
 
                             if (ress.status == '200') {
